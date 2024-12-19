@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workspace {
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+  workspaceOwner String
+  owner          User     @relation(fields: [workspaceOwner], references: [id], onDelete: Cascade)
+  title          String
+  iconId         String
+  data           String?
+  inTrash        String?
+  logo           String?
+  bannerUrl      String?
+  folders        Folder[]
+  files          File[]
+}
+
+model Folder {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  title        String
+  iconId       String
+  data         String?
+  inTrash      String?
+  bannerUrl    String?
+  workspaceId  String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  files       File[]
+}
+
+model File {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  title        String
+  iconId       String
+  data         String?
+  inTrash      String?
+  bannerUrl    String?
+  workspaceId  String
+  folderId     String
+  workspace    Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  folder       Folder    @relation(fields: [folderId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id           String     @id @default(uuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  email        String     @unique
+  fullname     String?
+  avatarUrl    String?
+  password     String
+  workspaces   Workspace[]
+  forgotPasswordToken String?
+  forgotPasswordTokenExpiry DateTime?
+  verifyToken String?
+  verifyTokenExpiry DateTime?
+  isVerified Boolean @default(false)
+}

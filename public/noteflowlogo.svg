@@ -1,0 +1,19 @@
+<svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6889FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7000FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#clip0_32_38035)">
+    <circle cx="15.5" cy="15.5" r="15.5" fill="url(#grad1)"/>
+    <path d="M15.5 2C9.701 2 5 6.701 5 12.5C5 18.299 9.701 23 15.5 23C21.299 23 26 18.299 26 12.5C26 6.701 21.299 2 15.5 2Z" fill="white"/>
+    <circle cx="21.5" cy="9.5" r="3.5" fill="#7000FF"/>
+    <circle cx="9.5" cy="21.5" r="3.5" fill="#6889FF"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_32_38035">
+      <rect width="31" height="31" fill="white"/>
+    </clipPath>
+  </defs>
+</svg>

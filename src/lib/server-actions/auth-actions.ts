@@ -40,16 +40,16 @@ export async function actionSignUpUser({
   return { data: newUser };
 }
 
-export async function actionVerifyUserEmail(email:string) {
-  const user= await prisma.user.findFirst({where:{email}});
-  if(!user) return {error:{message:'User not found'}};
-  if(user.isVerified) return {error:{message:'Email already verified'}};
+export async function actionVerifyUserEmail(email: string) {
+  const user = await prisma.user.findFirst({ where: { email } });
+  if (!user) return { error: { message: 'User not found' } };
+  if (user.isVerified) return { error: { message: 'Email already verified' } };
   try {
-    await sendEmail({email,emailType:EmailType.VERIFY,userId:user.id});
+    await sendEmail({ email, emailType: EmailType.VERIFY, userId: user.id });
   } catch (error) {
-    if(error instanceof Error){
-      return {error:{message:error.message}};
+    if (error instanceof Error) {
+      return { error: { message: error.message } };
     }
-    return {error:{message:'An unknown error occurred'}};
+    return { error: { message: 'An unknown error occurred' } };
   }
 }

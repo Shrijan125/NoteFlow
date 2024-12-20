@@ -115,8 +115,6 @@ export const sendEmail = async ({
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
-    }
-    else
-        throw new Error('An unknown error occurred');
+    } else throw new Error('An unknown error occurred');
   }
 };

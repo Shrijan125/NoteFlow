@@ -27,7 +27,7 @@ import { EMAIL_NOT_VERIFIED } from '@/lib/constants';
 
 const LoginPage = () => {
   const router = useRouter();
-  const [verified , setVerified] = useState(false);
+  const [verified, setVerified] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -37,14 +37,12 @@ const LoginPage = () => {
   });
 
   const isLoading = form.formState.isSubmitting;
-  const [loading , setLoading] = useState(false);
-  async function handleClick(e: React.MouseEvent<HTMLButtonElement>)
-  {
+  const [loading, setLoading] = useState(false);
+  async function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
     setLoading(true);
     e.preventDefault();
     const result = await actionVerifyUserEmail(form.getValues('email'));
-    if(result?.error)
-    {
+    if (result?.error) {
       setSubmitError(result.error.message);
       form.reset();
       setLoading(false);
@@ -107,70 +105,84 @@ const LoginPage = () => {
         >
           An all-In-One Collaboration and Productivity Platform
         </FormDescription>
-        {!submitted &&  <FormField
-          disabled={isLoading || loading}
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input type="email" placeholder="Email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />}
-        {!submitted &&  <FormField
-          disabled={isLoading || loading}
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input type="password" placeholder="Password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />}
+        {!submitted && (
+          <FormField
+            disabled={isLoading || loading}
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input type="email" placeholder="Email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+        {!submitted && (
+          <FormField
+            disabled={isLoading || loading}
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input type="password" placeholder="Password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         {!submitted && submitError && <FormMessage>{submitError}</FormMessage>}
-       {!submitted && <Button
-          type="submit"
-          className="w-full p-6"
-          size="lg"
-          disabled={isLoading || loading}
-        >
-          {!isLoading ? 'Login' : <Loader />}
-        </Button>}
-        {!submitted && (verified ?
-         <span className="self-container">
-          Email not verified?{' '}
-         <Button onClick={handleClick} disabled={loading}  variant={'ghost'} className='text-primary text-md'>
-            {!loading ? 'Verify Your Email' : <Loader/>}
-         </Button>
-       </span>
-         : <span className="self-container">
-          Don't have an account?{' '}
-          <Link href="/signup" className="text-primary">
-            Sign Up
-          </Link>
-        </span>)}
-       {!submitted && !loading && <span className="self-container flex flex-col">
-          <Link href="/reset"  className="text-primary">
-            Forgot Password ?
-          </Link>
-        </span>}
-      {
-        submitted &&  (<Alert className='bg-primary'>
-          <MailCheck className="h-4 w-4" />
-        <AlertTitle>
-          Check your email
-        </AlertTitle>
-        <AlertDescription>
-          {'An email confirmation has been sent.'}
-        </AlertDescription>
-      </Alert>)
-      }
+        {!submitted && (
+          <Button
+            type="submit"
+            className="w-full p-6"
+            size="lg"
+            disabled={isLoading || loading}
+          >
+            {!isLoading ? 'Login' : <Loader />}
+          </Button>
+        )}
+        {!submitted &&
+          (verified ? (
+            <span className="self-container">
+              Email not verified?{' '}
+              <Button
+                onClick={handleClick}
+                disabled={loading}
+                variant={'ghost'}
+                className="text-primary text-md"
+              >
+                {!loading ? 'Verify Your Email' : <Loader />}
+              </Button>
+            </span>
+          ) : (
+            <span className="self-container">
+              Don't have an account?{' '}
+              <Link href="/signup" className="text-primary">
+                Sign Up
+              </Link>
+            </span>
+          ))}
+        {!submitted && !loading && (
+          <span className="self-container flex flex-col">
+            <Link href="/reset" className="text-primary">
+              Forgot Password ?
+            </Link>
+          </span>
+        )}
+        {submitted && (
+          <Alert className="bg-primary">
+            <MailCheck className="h-4 w-4" />
+            <AlertTitle>Check your email</AlertTitle>
+            <AlertDescription>
+              {'An email confirmation has been sent.'}
+            </AlertDescription>
+          </Alert>
+        )}
       </form>
     </Form>
   );

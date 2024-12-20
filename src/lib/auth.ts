@@ -2,6 +2,7 @@ import prisma from '@/db';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcrypt';
 import { EMAIL_NOT_VERIFIED } from './constants';
+import { NextAuthOptions } from 'next-auth';
 
 export const authOptions = {
   providers: [
@@ -42,7 +43,11 @@ export const authOptions = {
             throw new Error(EMAIL_NOT_VERIFIED);
           }
 
-          return user;
+          // Return only the fields you want to expose to the session
+          return {
+            id: user.id,
+            email: user.email,
+          };
         } catch (error) {
           if (error instanceof Error) {
             throw new Error(error.message);
@@ -55,4 +60,13 @@ export const authOptions = {
   pages: {
     signIn: '/login',
   },
-};
+  callbacks: {
+    session: ({ session, token }) => ({
+      ...session,
+      user: {
+        id: token.sub,
+        email: token.email,
+      }
+    })
+  }
+} satisfies NextAuthOptions;

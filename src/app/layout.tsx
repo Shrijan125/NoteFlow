@@ -4,6 +4,8 @@ import './globals.css';
 import { ThemeProvider } from '@/lib/providers/next-theme-provider';
 import { SessionProvider } from 'next-auth/react';
 import { NextSessionProvider } from '@/lib/providers/session-provider';
+import { EdgeStoreProvider } from '@/lib/providers/edgestore';
+import AppStateProvider from '@/lib/providers/state-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -35,7 +37,11 @@ export default function RootLayout({
           defaultTheme="dark"
           enableSystem={true}
         >
-          <NextSessionProvider>{children}</NextSessionProvider>
+          <NextSessionProvider>
+            <AppStateProvider>
+              <EdgeStoreProvider>{children}</EdgeStoreProvider>
+            </AppStateProvider>
+          </NextSessionProvider>
         </ThemeProvider>
       </body>
     </html>

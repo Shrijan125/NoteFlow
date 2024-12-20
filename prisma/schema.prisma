@@ -13,6 +13,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SubscriptionStatus {
+  unpaid
+  past_due
+  incomplete_expired
+  incomplete
+  canceled
+  active
+  trialing
+}
+
+enum PricingType {
+  recurring
+  one_time
+}
+
+enum PricingPlanInterval {
+  year
+  month
+  week
+  day
+}
+
 model Workspace {
   id             String   @id @default(uuid())
   createdAt      DateTime @default(now())
@@ -26,6 +48,7 @@ model Workspace {
   bannerUrl      String?
   folders        Folder[]
   files          File[]
+  collaborator Collaborator[]
 }
 
 model Folder {
@@ -69,4 +92,66 @@ model User {
   verifyToken String?
   verifyTokenExpiry DateTime?
   isVerified Boolean @default(false)
+  collaborator Collaborator[]
+  subscription Subscription[]
+}
+
+model Collaborator {
+  id          String    @id @default(uuid())
+  createdAt   DateTime  @default(now())
+  workspaceId String
+  userId      String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Customer {
+  id               String   @id @default(uuid())
+  stripeCustomerId String?
+}
+
+model Subscription {
+  id                    String   @id
+  userId                String
+  status                SubscriptionStatus
+  metadata             Json?
+  priceId              String?
+  quantity             Int?
+  cancelAtPeriodEnd    Boolean?
+  created              DateTime @default(now())
+  currentPeriodStart   DateTime @default(now())
+  currentPeriodEnd     DateTime @default(now())
+  endedAt              DateTime @default(now())
+  cancelAt             DateTime @default(now())
+  canceledAt           DateTime @default(now())
+  trialStart           DateTime @default(now())
+  trialEnd             DateTime @default(now())
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  price                Price?    @relation(fields: [priceId], references: [id])
+}
+
+model Price {
+  id                String   @id
+  productId         String?
+  active            Boolean?
+  description       String?
+  unitAmount        BigInt
+  currency          String
+  type              PricingType
+  interval          PricingPlanInterval
+  intervalCount     Int
+  trialPeriodDays   Int?
+  metadata          Json?
+  product           Product? @relation(fields: [productId], references: [id])
+  subscriptions     Subscription[]
+}
+
+model Product {
+  id                String   @id
+  active            Boolean?
+  name              String
+  description       String
+  image             String?
+  metadata          Json?
+  prices            Price[]
 }

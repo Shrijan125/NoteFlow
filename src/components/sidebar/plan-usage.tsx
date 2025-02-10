@@ -1,7 +1,7 @@
 'use client';
 import { MAX_FOLDERS_FREE_PLAN } from '@/lib/constants';
 import { useAppState } from '@/lib/providers/state-provider';
-import { Subscription } from '@prisma/client'
+import { Subscription } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import { Progress } from '../ui/progress';
 import CypressDiamondIcon from '../icons/cypressDiamongIcon';
@@ -17,12 +17,12 @@ const PlanUsage: React.FC<PlanUsageProps> = ({
 }) => {
   const { workspaceId, state } = useAppState();
   const [usagePercentage, setUsagePercentage] = useState(
-    (foldersLength / MAX_FOLDERS_FREE_PLAN) * 100
+    (foldersLength / MAX_FOLDERS_FREE_PLAN) * 100,
   );
 
   useEffect(() => {
     const stateFoldersLength = state.workspaces.find(
-      (workspace) => workspace.id === workspaceId
+      (workspace) => workspace.id === workspaceId,
     )?.folders.length;
     if (stateFoldersLength === undefined) return;
     setUsagePercentage((stateFoldersLength / MAX_FOLDERS_FREE_PLAN) * 100);
@@ -55,10 +55,7 @@ const PlanUsage: React.FC<PlanUsageProps> = ({
         </div>
       )}
       {subscription?.status !== 'active' && (
-        <Progress
-          value={usagePercentage}
-          className="h-1"
-        />
+        <Progress value={usagePercentage} className="h-1" />
       )}
     </article>
   );

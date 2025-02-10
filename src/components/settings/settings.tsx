@@ -10,7 +10,7 @@ const Settings: React.FC<SettingsProps> = ({ children }) => {
   return (
     <CustomDialogTrigger
       header="Settings"
-      content={<SettingsForm />}
+      content={<SettingsForm></SettingsForm>}
     >
       {children}
     </CustomDialogTrigger>

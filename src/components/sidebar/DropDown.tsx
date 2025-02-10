@@ -9,13 +9,13 @@ import {
 } from '../ui/accordion';
 import clsx from 'clsx';
 import EmojiPicker from '../global/emoji-picker';
-import { createFile, updateFile, updateFolder } from '@/lib/queries';
-import { useToast } from '@/hooks/use-toast';
 import TooltipComponent from '../global/tooltip-component';
 import { PlusIcon, Trash } from 'lucide-react';
-import { File } from '@prisma/client';
 import { v4 } from 'uuid';
+import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';
+import { createFile, updateFile, updateFolder } from '@/lib/queries';
+import { File } from '@prisma/client';
 
 interface DropdownProps {
   title: string;
@@ -35,10 +35,9 @@ const Dropdown: React.FC<DropdownProps> = ({
   disabled,
   ...props
 }) => {
-//   const supabase = createClientComponentClient();
   const { toast } = useToast();
   const session = useSession();
-  const user = session?.data?.user;
+  const user = session.data?.user;
   const { state, dispatch, workspaceId, folderId } = useAppState();
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
@@ -77,7 +76,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       router.push(
         `/dashboard/${workspaceId}/${folderId}/${
           accordionId.split('folder')[1]
-        }`
+        }`,
       );
     }
   };
@@ -190,7 +189,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       });
       const { data, error } = await updateFolder(
         { inTrash: `Deleted by ${user?.email}` },
-        pathId[0]
+        pathId[0],
       );
       if (error) {
         toast({
@@ -218,7 +217,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       });
       const { data, error } = await updateFile(
         { inTrash: `Deleted by ${user?.email}` },
-        pathId[1]
+        pathId[1],
       );
       if (error) {
         toast({
@@ -241,7 +240,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     {
       'group/folder': isFolder,
       'group/file': !isFolder,
-    }
+    },
   );
 
   const listStyles = useMemo(
@@ -250,7 +249,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         'border-none text-md': isFolder,
         'border-none ml-6 text-[16px] py-1': !isFolder,
       }),
-    [isFolder]
+    [isFolder],
   );
 
   const hoverStyles = useMemo(
@@ -260,9 +259,9 @@ const Dropdown: React.FC<DropdownProps> = ({
         {
           'group-hover/file:block': listType === 'file',
           'group-hover/folder:block': listType === 'folder',
-        }
+        },
       ),
-    [isFolder]
+    [isFolder],
   );
 
   const addNewFile = async () => {
@@ -312,7 +311,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         p-2 
         dark:text-muted-foreground 
         text-sm"
-        disabled={listType === 'file'}
+        hiddenIcon={listType === 'file'}
       >
         <div className={groupIdentifies}>
           <div
@@ -322,8 +321,8 @@ const Dropdown: React.FC<DropdownProps> = ({
           justify-center 
           overflow-hidden"
           >
-            <div className="relative">
-              <EmojiPicker getValue={onChangeEmoji}>{iconId}</EmojiPicker>
+            <div className="relative" onClick={(e) => e.stopPropagation()}>
+              <EmojiPicker  getValue={onChangeEmoji}>{iconId}</EmojiPicker>
             </div>
             <input
               type="text"
@@ -333,7 +332,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                 {
                   'bg-muted cursor-text': isEditing,
                   'bg-transparent cursor-pointer': !isEditing,
-                }
+                },
               )}
               readOnly={!isEditing}
               onDoubleClick={handleDoubleClick}
@@ -344,7 +343,9 @@ const Dropdown: React.FC<DropdownProps> = ({
             />
           </div>
           <div className={hoverStyles}>
-            <TooltipComponent message="Delete Folder">
+            <TooltipComponent
+              message={listType === 'folder' ? 'Delete Folder' : 'Delete File'}
+            >
               <Trash
                 onClick={moveToTrash}
                 size={15}
@@ -354,7 +355,10 @@ const Dropdown: React.FC<DropdownProps> = ({
             {listType === 'folder' && !isEditing && (
               <TooltipComponent message="Add File">
                 <PlusIcon
-                  onClick={addNewFile}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addNewFile();
+                  }}
                   size={15}
                   className="hover:dark:text-white dark:text-Neutrals/neutrals-7 transition-colors"
                 />
@@ -363,24 +367,26 @@ const Dropdown: React.FC<DropdownProps> = ({
           </div>
         </div>
       </AccordionTrigger>
-      <AccordionContent>
-        {state.workspaces
-          .find((workspace) => workspace.id === workspaceId)
-          ?.folders.find((folder) => folder.id === id)
-          ?.files.filter((file) => !file.inTrash)
-          .map((file) => {
-            const customFileId = `${id}folder${file.id}`;
-            return (
-              <Dropdown
-                key={file.id}
-                title={file.title}
-                listType="file"
-                id={customFileId}
-                iconId={file.iconId}
-              />
-            );
-          })}
-      </AccordionContent>
+      {listType === 'folder' && (
+        <AccordionContent key={id}>
+          {state.workspaces
+            .find((workspace) => workspace.id === workspaceId)
+            ?.folders.find((folder) => folder.id === id)
+            ?.files.filter((file) => !file.inTrash)
+            .map((file) => {
+              const customFileId = `${id}folder${file.id}`;
+              return (
+                <Dropdown
+                  key={file.id}
+                  title={file.title}
+                  listType="file"
+                  id={customFileId}
+                  iconId={file.iconId}
+                />
+              );
+            })}
+        </AccordionContent>
+      )}
     </AccordionItem>
   );
 };

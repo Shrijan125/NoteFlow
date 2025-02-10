@@ -15,6 +15,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
 import { useSession } from 'next-auth/react';
+import { getUsersFromSearch } from '@/lib/queries';
 
 interface CollaboratorSearchProps {
   existingCollaborators: User[] | [];
@@ -27,9 +28,9 @@ const CollaboratorSearch: React.FC<CollaboratorSearchProps> = ({
   existingCollaborators,
   getCollaborator,
 }) => {
-//   const { user } = useSupabaseUser();
-const session = useSession();
-const user = session?.data?.user;
+  //   const { user } = useSupabaseUser();
+  const session = useSession();
+  const user = session?.data?.user;
   const [searchResults, setSearchResults] = useState<User[] | []>([]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -39,13 +40,12 @@ const user = session?.data?.user;
     };
   }, []);
 
-
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (timerRef.current) clearTimeout(timerRef.current);
-    // timerRef.current = setTimeout(async () => {
-    //   const res = await getUsersFromSearch(e.target.value);
-    //   setSearchResults(res);
-    // }, 450);
+    timerRef.current = setTimeout(async () => {
+      const res = await getUsersFromSearch(e.target.value);
+      setSearchResults(res);
+    }, 450);
   };
 
   const addCollaborator = (user: User) => {
@@ -65,9 +65,7 @@ const user = session?.data?.user;
             </p>
           </SheetDescription>
         </SheetHeader>
-        <div
-          className="flex items-center justify-center gap-2 mt-2 "
-        >
+        <div className="flex items-center justify-center gap-2 mt-2 ">
           <Search />
           <Input
             name="name"
@@ -76,15 +74,13 @@ const user = session?.data?.user;
             onChange={onChangeHandler}
           />
         </div>
-        <ScrollArea
-          className="w-full mt-6 overflow-y-scroll rounded-md "
-        >
+        <ScrollArea className="w-full mt-6 overflow-y-scroll rounded-md ">
           {searchResults
             .filter(
               (result) =>
                 !existingCollaborators.some(
-                  (existing) => existing.email === result.email
-                )
+                  (existing) => existing.email === result.email,
+                ),
             )
             .filter((result) => result.email !== user?.email)
             .map((user) => (

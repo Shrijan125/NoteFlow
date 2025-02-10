@@ -2,7 +2,7 @@
 import { FormSchema } from '../types';
 import { z } from 'zod';
 import prisma from '@/db';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { EmailType, sendEmail } from '../mailer';
 
 export async function actionSignUpUser({

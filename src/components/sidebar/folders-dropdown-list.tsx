@@ -1,6 +1,6 @@
 'use client';
 import { useAppState } from '@/lib/providers/state-provider';
-import { Folder } from'@prisma/client';
+import { Folder } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import TooltipComponent from '../global/tooltip-component';
 import { PlusIcon } from 'lucide-react';
@@ -10,8 +10,6 @@ import { createFolder } from '@/lib/queries';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion } from '../ui/accordion';
 import Dropdown from './DropDown';
-import useSupabaseRealtime from '@/lib/hooks/useSupabaseRealtime';
-import { useSubscriptionModal } from '@/lib/providers/subscription-modal-provider';
 
 interface FoldersDropdownListProps {
   workspaceFolders: Folder[];
@@ -22,16 +20,11 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
   workspaceFolders,
   workspaceId,
 }) => {
-  useSupabaseRealtime();
   const { state, dispatch, folderId } = useAppState();
-  const { open, setOpen } = useSubscriptionModal();
   const { toast } = useToast();
   const [folders, setFolders] = useState(workspaceFolders);
-  const { subscription } = useSupabaseUser();
-
-  //effec set nitial satte server app state
   useEffect(() => {
-    if (workspaceFolders.length > 0) {
+    if (workspaceFolders?.length > 0) {
       dispatch({
         type: 'SET_FOLDERS',
         payload: {
@@ -52,20 +45,18 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
   useEffect(() => {
     setFolders(
       state.workspaces.find((workspace) => workspace.id === workspaceId)
-        ?.folders || []
+        ?.folders || [],
     );
   }, [state]);
 
-  //add folder
   const addFolderHandler = async () => {
-    if (folders.length >= 3 && !subscription) {
-      setOpen(true);
+    if (folders.length >= 3) {
       return;
     }
     const newFolder: Folder = {
       data: null,
       id: v4(),
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       title: 'Untitled',
       iconId: '📄',
       inTrash: null,

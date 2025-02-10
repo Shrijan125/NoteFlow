@@ -6,20 +6,22 @@ import { File } from '@prisma/client';
 const useRealtimeFiles = () => {
   const { dispatch, state } = useAppState();
   const router = useRouter();
-  
+
   useEffect(() => {
-    const ws = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001');
-    
+    const ws = new WebSocket(
+      process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001',
+    );
+
     ws.onmessage = (event) => {
       const payload = JSON.parse(event.data);
-      
+
       if (payload.eventType === 'INSERT') {
         const {
           folder_id: folderId,
           workspace_id: workspaceId,
           id: fileId,
         } = payload.new;
-        
+
         if (
           !state.workspaces
             .find((workspace) => workspace.id === workspaceId)
@@ -37,7 +39,7 @@ const useRealtimeFiles = () => {
             inTrash: payload.new.in_trash,
             bannerUrl: payload.new.banner_url,
           };
-          
+
           dispatch({
             type: 'ADD_FILE',
             payload: { file: newFile, folderId, workspaceId },
@@ -46,7 +48,7 @@ const useRealtimeFiles = () => {
       } else if (payload.eventType === 'DELETE') {
         let workspaceId = '';
         let folderId = '';
-        
+
         const fileExists = state.workspaces.some((workspace) =>
           workspace.folders.some((folder) =>
             folder.files.some((file) => {
@@ -55,10 +57,10 @@ const useRealtimeFiles = () => {
                 folderId = folder.id;
                 return true;
               }
-            })
-          )
+            }),
+          ),
         );
-        
+
         if (fileExists && workspaceId && folderId) {
           router.replace(`/dashboard/${workspaceId}`);
           dispatch({
@@ -68,7 +70,7 @@ const useRealtimeFiles = () => {
         }
       } else if (payload.eventType === 'UPDATE') {
         const { folder_id: folderId, workspace_id: workspaceId } = payload.new;
-        
+
         state.workspaces.some((workspace) =>
           workspace.folders.some((folder) =>
             folder.files.some((file) => {
@@ -88,8 +90,8 @@ const useRealtimeFiles = () => {
                 });
                 return true;
               }
-            })
-          )
+            }),
+          ),
         );
       }
     };

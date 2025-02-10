@@ -94,6 +94,7 @@ model User {
   isVerified Boolean @default(false)
   collaborator Collaborator[]
   subscription Subscription[]
+  lastSeen     DateTime?
 }
 
 model Collaborator {

@@ -8,10 +8,7 @@ interface TrashProps {
 
 const Trash: React.FC<TrashProps> = ({ children }) => {
   return (
-    <CustomDialogTrigger
-      header="Trash"
-      content={<TrashRestore />}
-    >
+    <CustomDialogTrigger header="Trash" content={<TrashRestore />}>
       {children}
     </CustomDialogTrigger>
   );

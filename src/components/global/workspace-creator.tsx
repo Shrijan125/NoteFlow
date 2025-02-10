@@ -1,5 +1,4 @@
 'use client';
-// import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
 import { User, Workspace as workspace } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -20,13 +19,12 @@ import { addCollaborators, createWorkspace } from '@/lib/queries';
 import CollaboratorSearch from './collaborator-search';
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { getServerSession } from 'next-auth';
 import { useToast } from '@/hooks/use-toast';
-import { authOptions } from '@/lib/auth';
+import { useSession } from 'next-auth/react';
 
-const WorkspaceCreator = async () => {
-  const session = await  getServerSession(authOptions);
-  const user = session?.user;
+const WorkspaceCreator = () => {
+  const session = useSession();
+  const user = session?.data?.user;
   const { toast } = useToast();
   const router = useRouter();
   const [permissions, setPermissions] = useState('private');
@@ -45,6 +43,7 @@ const WorkspaceCreator = async () => {
   const createItem = async () => {
     setIsLoading(true);
     const uuid = v4();
+
     if (user?.id) {
       const newWorkspace: workspace = {
         data: null,
@@ -75,10 +74,7 @@ const WorkspaceCreator = async () => {
   return (
     <div className="flex gap-4 flex-col">
       <div>
-        <Label
-          htmlFor="name"
-          className="text-sm text-muted-foreground"
-        >
+        <Label htmlFor="name" className="text-sm text-muted-foreground">
           Name
         </Label>
         <div
@@ -157,10 +153,7 @@ const WorkspaceCreator = async () => {
               addCollaborator(user);
             }}
           >
-            <Button
-              type="button"
-              className="text-sm mt-4"
-            >
+            <Button type="button" className="text-sm mt-4">
               <Plus />
               Add Collaborators
             </Button>

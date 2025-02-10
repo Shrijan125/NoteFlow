@@ -1,7 +1,6 @@
 // import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import React from 'react';
 
-import { cookies } from 'next/headers';
 import {
   getCollaboratingWorkspaces,
   getFolders,
@@ -16,7 +15,9 @@ import PlanUsage from './plan-usage';
 import NativeNavigation from './native-navigation';
 import { ScrollArea } from '../ui/scroll-area';
 import FoldersDropdownList from './folders-dropdown-list';
-import UserCard from './user-card';
+// import UserCard from './user-card';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 interface SidebarProps {
   params: { workspaceId: string };
@@ -24,17 +25,13 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
-  const supabase = createServerComponentClient({ cookies });
-  //user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getServerSession(authOptions);
 
-  if (!user) return;
+  if (!session || !session.user || !session.user.id) return;
 
   //subscr
   const { data: subscriptionData, error: subscriptionError } =
-    await getUserSubscriptionStatus(user.id);
+    await getUserSubscriptionStatus(session.user.id);
 
   //folders
   const { data: workspaceFolderData, error: foldersError } = await getFolders(
@@ -45,9 +42,9 @@ const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
 
   const [privateWorkspaces, collaboratingWorkspaces, sharedWorkspaces] =
     await Promise.all([
-      getPrivateWorkspaces(user.id),
-      getCollaboratingWorkspaces(user.id),
-      getSharedWorkspaces(user.id),
+      getPrivateWorkspaces(session.user.id),
+      getCollaboratingWorkspaces(session.user.id),
+      getSharedWorkspaces(session.user.id),
     ]);
 
   //get all the different workspaces private collaborating shared
@@ -96,7 +93,6 @@ const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
           />
         </ScrollArea>
       </div>
-      <UserCard subscription={subscriptionData} />
     </aside>
   );
 };

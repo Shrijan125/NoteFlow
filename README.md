@@ -31,13 +31,13 @@ NoteFlow is a real-time text editor built using Next.js, TypeScript, Prisma, Pos
 
 ## Tech Stack Logos
 
-![Next.js](public/screenshots/next.png)
-![TypeScript](public/screenshots/ts.png)
-![Prisma](public/screenshots/prisma.png)
-![Neon](public/screenshots/neondb.png)
-![NextAuth](public/screenshots/nextauth.png)
-![Socket.io](public/screenshots/socket.png)
-![EdgeStore](public/screenshots/edgestore.png)
+<img src="public/screenshots/next.png" alt="Next.js" width="40" height="40">&nbsp;&nbsp;
+<img src="public/screenshots/ts.png" alt="TypeScript" width="40" height="40">&nbsp;&nbsp;
+<img src="public/screenshots/prisma.png" alt="Prisma" width="40" height="40">&nbsp;&nbsp;
+<img src="public/screenshots/neondb.png" alt="Neon" width="40" height="40">&nbsp;&nbsp;
+<img src="public/screenshots/nextauth.png" alt="NextAuth" width="40" height="40">&nbsp;&nbsp;
+<img src="public/screenshots/socket.png" alt="Socket.io" width="40" height="40">&nbsp;&nbsp;
+<img src="public/screenshots/edgestore.png" alt="EdgeStore" width="40" height="40">
 
 ## Getting Started
 
